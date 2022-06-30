@@ -1,0 +1,66 @@
+# This is the compose file to be used by interviewers for generating data / making tests / performing an e2e assertion
+
+version: "3.8"
+
+services:
+  postgres:
+    image: "postgres:13.6"
+#    image: "utsavjha/cdm_db:1"
+    hostname: postgres
+    container_name: postgres
+    environment:
+      # - PGDATA=cdm_db
+      - POSTGRES_USER=su_champ
+      - POSTGRES_PASSWORD=magic
+      - POSTGRES_DB=some_company
+      - POSTGRES_HOSTNAME=postgres
+    volumes:
+      - ./data/init_sql/:/docker-entrypoint-initdb.d
+      - ./data/pg/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - "cdm"
+
+  # this is the data maker for making mock data-only meant for interviewers.
+  data_maker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_HOSTNAME=postgres
+      - POSTGRES_DB=some_company
+      - POSTGRES_USER=su_champ
+      - POSTGRES_PASSWORD=magic
+      - POSTGRES_PORTNUM=5432
+      - SETTING=medium
+    volumes:
+      - ./data/cdm/:/tmp
+    depends_on:
+      - postgres
+    restart: "on-failure"
+    networks:
+      - "cdm"
+
+  #   this is the service to expose the data- run after data-maker succeeds
+  data_exposer:
+    build:
+      context: cdm_exposer
+      dockerfile: Dockerfile
+    container_name: data_exposer
+    environment:
+      - SETTING=medium
+    ports:
+      - "8080:8080"
+    restart: "on-failure"
+    networks:
+      - "cdm"
+    depends_on:
+      - postgres
+
+volumes:
+  data:
+
+networks:
+  cdm:
+    name: "cdm"

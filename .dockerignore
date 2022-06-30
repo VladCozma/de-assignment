@@ -1,0 +1,9 @@
+*.github*
+*.idea*
+*csv*
+lib/medium_outputs/*
+lib/*csv
+venv/*
+*.md
+data/pg*
+data/pg/*

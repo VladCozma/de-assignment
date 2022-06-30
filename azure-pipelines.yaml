@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+    - releases/*
+    - feature/*
+  paths:
+    include:
+    - tests/*
+    exclude:
+    - README.md
+jobs:
+- job: 'Testing'
+  pool:
+    name: 'CDaaSLinux'
+
+  steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          yum install python3
+      displayName: 'Install Python'
+
+    - script: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install -r requirements.txt --user
+        python3 -m pip install pytest pytest-azurepipelines
+        python3 -m pip install pytest-cov
+        python3 -m pip install -e .
+      displayName: 'Install dependencies'
+
+    - script: |
+        python -m pytest tests/clients --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+      displayName: 'Run Integration Tests: Clients'
+      env:
+        CORPORATE_KEY: $(CORPORATE_KEY)
+        PASSWORD: $(PASSWORD)
+

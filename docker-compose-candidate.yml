@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: "utsavjha/cdm_database:2"
+    hostname: postgres
+    container_name: postgres
+    environment:
+      - PGDATA=cdm_data
+    volumes:
+      - ./data/init_sql/:/docker-entrypoint-initdb.d
+      - ./data/pg/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  data_exposer:
+    image: "utsavjha/cdm_exposer:1"
+    container_name: data_exposer
+    environment:
+      - SETTING=medium
+    ports:
+      - "8080:8080"
+    restart: "on-failure"
+    depends_on:
+      - postgres
+
+volumes:
+  data:

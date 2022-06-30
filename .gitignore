@@ -1,11 +1,17 @@
+# Data specific
+data
+
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+.idea*
+venv/*
+*.iml
+*pycache*
+data/pg*
+lib/src/*outputs/*
+lib/src/*.csv
 
-# C extensions
-*.so
 
+*DS_Store*
 # Distribution / packaging
 .Python
 build/
@@ -14,7 +20,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+
 lib64/
 parts/
 sdist/
@@ -127,3 +133,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# vscode
+.vscode/*
+
+data/pg
